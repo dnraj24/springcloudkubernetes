@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scdf-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scdf-server
+  template:
+    metadata:
+      labels:
+        app: scdf-server
+    spec:
+      containers:
+        - name: scdf-server-container
+          image: springcloud/spring-cloud-dataflow-server:latest
+          ports:
+            - containerPort: 9393
+          env:
+            - name: SPRING_CLOUD_DATAFLOW_FEATURES_ANALYTICS_ENABLED
+              value: "false"
+            - name: SPRING_CLOUD_DATAFLOW_SERVER_URI
+              value: http://scdf-server:9393
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:sqlserver://skipcartdevdb.database.windows.net;databaseName=skipcartDEVdb;encrypt=true;trustServerCertificate=true
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: com.microsoft.sqlserver.jdbc.SQLServerDriver
+            - name: SPRING_DATASOURCE_USERNAME
+              value: skipcartdevdbadmin
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: '$kip(art@dev223'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scdf-server-service
+spec:
+  selector:
+    app: scdf-server
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9393
+  type: LoadBalancer

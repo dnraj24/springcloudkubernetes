@@ -1,0 +1,46 @@
+server:
+  port: 8091
+spring:
+  application:
+    name: Delivery On Map
+    profiles:
+      active: dev
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://skipcartdevdb.database.windows.net;databaseName=skipcartDEVdb;encrypt=true;trustServerCertificate=true
+    username: skipcartdevdbadmin
+    password: $kip(art@dev223
+  jpa:
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
+    show-sql: true
+    properties:
+      format_sql: true
+  batch:
+    jdbc:
+      schema: classpath:org/springframework/batch/core/schema-sqlserver.sql
+      initialize-schema: embedded
+      table-prefix: dbo
+    job:
+      enabled: false
+  cloud:
+    gcp:
+      project-id: "silver-cairn-393120"
+      credentials:
+        location: classpath:skipcart_app.json
+
+batchJobs:
+  deliveryOnMap:
+    name: "deliveryOnMap"
+    fileName: "DeliveriesOnMap.xml"
+    buckeName: "skipcart_testing"
+    batchSize: 10000
+    cron-expression: 0 */1 * * * ?
+
+logging:
+  level:
+    root: DEBUG
+    sql: DEBUG
+
